@@ -1,11 +1,11 @@
-/**
- *    Copyright 2009-2015 the original author or authors.
+/*
+ *    Copyright 2009-2022 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *       https://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,15 +15,16 @@
  */
 package org.apache.ibatis.cache;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.apache.ibatis.cache.decorators.LruCache;
 import org.apache.ibatis.cache.impl.PerpetualCache;
-import static org.junit.Assert.*;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class LruCacheTest {
+class LruCacheTest {
 
   @Test
-  public void shouldRemoveLeastRecentlyUsedItemInBeyondFiveEntries() {
+  void shouldRemoveLeastRecentlyUsedItemInBeyondFiveEntries() {
     LruCache cache = new LruCache(new PerpetualCache("default"));
     cache.setSize(5);
     for (int i = 0; i < 5; i++) {
@@ -36,7 +37,7 @@ public class LruCacheTest {
   }
 
   @Test
-  public void shouldRemoveItemOnDemand() {
+  void shouldRemoveItemOnDemand() {
     Cache cache = new LruCache(new PerpetualCache("default"));
     cache.putObject(0, 0);
     assertNotNull(cache.getObject(0));
@@ -45,7 +46,7 @@ public class LruCacheTest {
   }
 
   @Test
-  public void shouldFlushAllItemsOnDemand() {
+  void shouldFlushAllItemsOnDemand() {
     Cache cache = new LruCache(new PerpetualCache("default"));
     for (int i = 0; i < 5; i++) {
       cache.putObject(i, i);

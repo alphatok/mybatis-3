@@ -1,11 +1,11 @@
-/**
- *    Copyright 2009-2018 the original author or authors.
+/*
+ *    Copyright 2009-2022 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *       https://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -59,7 +59,7 @@ public abstract class BaseBuilder {
   }
 
   protected Set<String> stringSetValueOf(String value, String defaultValue) {
-    value = (value == null ? defaultValue : value);
+    value = value == null ? defaultValue : value;
     return new HashSet<>(Arrays.asList(value.split(",")));
   }
 
@@ -102,7 +102,7 @@ public abstract class BaseBuilder {
       return null;
     }
     try {
-      return resolveClass(alias).newInstance();
+      return clazz.getDeclaredConstructor().newInstance();
     } catch (Exception e) {
       throw new BuilderException("Error creating instance. Cause: " + e, e);
     }
@@ -127,7 +127,7 @@ public abstract class BaseBuilder {
     if (type != null && !TypeHandler.class.isAssignableFrom(type)) {
       throw new BuilderException("Type " + type.getName() + " is not a valid TypeHandler because it does not implement TypeHandler interface");
     }
-    @SuppressWarnings( "unchecked" ) // already verified it is a TypeHandler
+    @SuppressWarnings("unchecked") // already verified it is a TypeHandler
     Class<? extends TypeHandler<?>> typeHandlerType = (Class<? extends TypeHandler<?>>) type;
     return resolveTypeHandler(javaType, typeHandlerType);
   }

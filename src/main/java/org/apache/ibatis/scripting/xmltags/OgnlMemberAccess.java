@@ -1,11 +1,11 @@
-/**
- *    Copyright 2009-2018 the original author or authors.
+/*
+ *    Copyright 2009-2022 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *       https://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,12 +15,13 @@
  */
 package org.apache.ibatis.scripting.xmltags;
 
-import ognl.MemberAccess;
-import org.apache.ibatis.reflection.Reflector;
-
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Member;
 import java.util.Map;
+
+import ognl.MemberAccess;
+
+import org.apache.ibatis.reflection.Reflector;
 
 /**
  * The {@link MemberAccess} class that based on <a href=
@@ -57,9 +58,7 @@ class OgnlMemberAccess implements MemberAccess {
   @Override
   public void restore(Map context, Object target, Member member, String propertyName,
       Object state) {
-    if (state != null) {
-      ((AccessibleObject) member).setAccessible(((Boolean) state));
-    }
+    // Flipping accessible flag is not thread safe. See #1648
   }
 
   @Override

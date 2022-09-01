@@ -1,11 +1,11 @@
-/**
- *    Copyright 2009-2018 the original author or authors.
+/*
+ *    Copyright 2009-2022 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *       https://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@ import java.lang.ref.ReferenceQueue;
 import java.lang.ref.SoftReference;
 import java.util.Deque;
 import java.util.LinkedList;
-import java.util.concurrent.locks.ReadWriteLock;
 
 import org.apache.ibatis.cache.Cache;
 
@@ -53,7 +52,6 @@ public class SoftCache implements Cache {
     return delegate.getSize();
   }
 
-
   public void setSize(int size) {
     this.numberOfHardLinks = size;
   }
@@ -74,7 +72,7 @@ public class SoftCache implements Cache {
       if (result == null) {
         delegate.removeObject(key);
       } else {
-        // See #586 (and #335) modifications need more than a read lock 
+        // See #586 (and #335) modifications need more than a read lock
         synchronized (hardLinksToAvoidGarbageCollection) {
           hardLinksToAvoidGarbageCollection.addFirst(result);
           if (hardLinksToAvoidGarbageCollection.size() > numberOfHardLinks) {
@@ -89,7 +87,9 @@ public class SoftCache implements Cache {
   @Override
   public Object removeObject(Object key) {
     removeGarbageCollectedItems();
-    return delegate.removeObject(key);
+    @SuppressWarnings("unchecked")
+    SoftReference<Object> softReference = (SoftReference<Object>) delegate.removeObject(key);
+    return softReference == null ? null : softReference.get();
   }
 
   @Override
@@ -99,11 +99,6 @@ public class SoftCache implements Cache {
     }
     removeGarbageCollectedItems();
     delegate.clear();
-  }
-
-  @Override
-  public ReadWriteLock getReadWriteLock() {
-    return null;
   }
 
   private void removeGarbageCollectedItems() {

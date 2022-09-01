@@ -1,11 +1,11 @@
-/**
- *    Copyright 2009-2015 the original author or authors.
+/*
+ *    Copyright 2009-2022 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *       https://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,15 +15,16 @@
  */
 package org.apache.ibatis.cache;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.apache.ibatis.cache.decorators.*;
 import org.apache.ibatis.cache.impl.PerpetualCache;
-import static org.junit.Assert.assertTrue;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class SuperCacheTest {
+class SuperCacheTest {
 
   @Test
-  public void shouldDemonstrate5LevelSuperCacheHandlesLotsOfEntriesWithoutCrashing() {
+  void shouldDemonstrate5LevelSuperCacheHandlesLotsOfEntriesWithoutCrashing() {
     final int N = 100000;
     Cache cache = new PerpetualCache("default");
     cache = new LruCache(cache);
@@ -32,7 +33,7 @@ public class SuperCacheTest {
     cache = new WeakCache(cache);
     cache = new ScheduledCache(cache);
     cache = new SerializedCache(cache);
-//    cache = new LoggingCache(cache);
+    // cache = new LoggingCache(cache);
     cache = new SynchronizedCache(cache);
     cache = new TransactionalCache(cache);
     for (int i = 0; i < N; i++) {
@@ -43,6 +44,5 @@ public class SuperCacheTest {
     }
     assertTrue(cache.getSize() < N);
   }
-
 
 }

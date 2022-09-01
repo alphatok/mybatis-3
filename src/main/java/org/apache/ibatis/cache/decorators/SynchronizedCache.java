@@ -1,11 +1,11 @@
-/**
- *    Copyright 2009-2017 the original author or authors.
+/*
+ *    Copyright 2009-2022 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *       https://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,8 +15,6 @@
  */
 package org.apache.ibatis.cache.decorators;
 
-import java.util.concurrent.locks.ReadWriteLock;
-
 import org.apache.ibatis.cache.Cache;
 
 /**
@@ -25,7 +23,7 @@ import org.apache.ibatis.cache.Cache;
 public class SynchronizedCache implements Cache {
 
   private final Cache delegate;
-  
+
   public SynchronizedCache(Cache delegate) {
     this.delegate = delegate;
   }
@@ -68,11 +66,6 @@ public class SynchronizedCache implements Cache {
   @Override
   public boolean equals(Object obj) {
     return delegate.equals(obj);
-  }
-
-  @Override
-  public ReadWriteLock getReadWriteLock() {
-    return null;
   }
 
 }

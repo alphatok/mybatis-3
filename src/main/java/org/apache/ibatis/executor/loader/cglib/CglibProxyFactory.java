@@ -1,11 +1,11 @@
-/**
- *    Copyright 2009-2017 the original author or authors.
+/*
+ *    Copyright 2009-2022 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *       https://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@ package org.apache.ibatis.executor.loader.cglib;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
 import net.sf.cglib.proxy.Callback;
@@ -42,10 +41,11 @@ import org.apache.ibatis.session.Configuration;
 
 /**
  * @author Clinton Begin
+ * @deprecated Since 3.5.10, use Javassist instead.
  */
+@Deprecated
 public class CglibProxyFactory implements ProxyFactory {
 
-  private static final Log log = LogFactory.getLog(CglibProxyFactory.class);
   private static final String FINALIZE_METHOD = "finalize";
   private static final String WRITE_REPLACE_METHOD = "writeReplace";
 
@@ -66,23 +66,19 @@ public class CglibProxyFactory implements ProxyFactory {
     return EnhancedDeserializationProxyImpl.createProxy(target, unloadedProperties, objectFactory, constructorArgTypes, constructorArgs);
   }
 
-  @Override
-  public void setProperties(Properties properties) {
-      // Not Implemented
-  }
-
   static Object crateProxy(Class<?> type, Callback callback, List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
+    LogHolder.log.warn("CglibProxyFactory is deprecated. Use another proxy factory implementation.");
     Enhancer enhancer = new Enhancer();
     enhancer.setCallback(callback);
     enhancer.setSuperclass(type);
     try {
       type.getDeclaredMethod(WRITE_REPLACE_METHOD);
       // ObjectOutputStream will call writeReplace of objects returned by writeReplace
-      if (log.isDebugEnabled()) {
-        log.debug(WRITE_REPLACE_METHOD + " method was found on bean " + type + ", make sure it returns this");
+      if (LogHolder.log.isDebugEnabled()) {
+        LogHolder.log.debug(WRITE_REPLACE_METHOD + " method was found on bean " + type + ", make sure it returns this");
       }
     } catch (NoSuchMethodException e) {
-      enhancer.setInterfaces(new Class[]{WriteReplaceInterface.class});
+      enhancer.setInterfaces(new Class[] { WriteReplaceInterface.class });
     } catch (SecurityException e) {
       // nothing to do here
     }
@@ -194,4 +190,9 @@ public class CglibProxyFactory implements ProxyFactory {
       return new CglibSerialStateHolder(userBean, unloadedProperties, objectFactory, constructorArgTypes, constructorArgs);
     }
   }
+
+  private static class LogHolder {
+    private static final Log log = LogFactory.getLog(CglibProxyFactory.class);
+  }
+
 }

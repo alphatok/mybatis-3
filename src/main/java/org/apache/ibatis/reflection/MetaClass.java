@@ -1,11 +1,11 @@
-/**
- *    Copyright 2009-2018 the original author or authors.
+/*
+ *    Copyright 2009-2022 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *       https://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -116,17 +116,18 @@ public class MetaClass {
     try {
       Invoker invoker = reflector.getGetInvoker(propertyName);
       if (invoker instanceof MethodInvoker) {
-        Field _method = MethodInvoker.class.getDeclaredField("method");
-        _method.setAccessible(true);
-        Method method = (Method) _method.get(invoker);
+        Field declaredMethod = MethodInvoker.class.getDeclaredField("method");
+        declaredMethod.setAccessible(true);
+        Method method = (Method) declaredMethod.get(invoker);
         return TypeParameterResolver.resolveReturnType(method, reflector.getType());
       } else if (invoker instanceof GetFieldInvoker) {
-        Field _field = GetFieldInvoker.class.getDeclaredField("field");
-        _field.setAccessible(true);
-        Field field = (Field) _field.get(invoker);
+        Field declaredField = GetFieldInvoker.class.getDeclaredField("field");
+        declaredField.setAccessible(true);
+        Field field = (Field) declaredField.get(invoker);
         return TypeParameterResolver.resolveFieldType(field, reflector.getType());
       }
-    } catch (NoSuchFieldException | IllegalAccessException ignored) {
+    } catch (NoSuchFieldException | IllegalAccessException e) {
+      // Ignored
     }
     return null;
   }

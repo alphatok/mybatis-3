@@ -1,11 +1,11 @@
-/**
- *    Copyright 2009-2018 the original author or authors.
+/*
+ *    Copyright 2009-2022 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *       https://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,10 +20,13 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
 import javax.sql.DataSource;
@@ -56,6 +59,9 @@ public class PooledDataSource implements DataSource {
   protected int poolPingConnectionsNotUsedFor;
 
   private int expectedConnectionTypeCode;
+
+  private final Lock lock = new ReentrantLock();
+  private final Condition condition = lock.newCondition();
 
   public PooledDataSource() {
     dataSource = new UnpooledDataSource();
@@ -96,22 +102,22 @@ public class PooledDataSource implements DataSource {
   }
 
   @Override
-  public void setLoginTimeout(int loginTimeout) throws SQLException {
+  public void setLoginTimeout(int loginTimeout) {
     DriverManager.setLoginTimeout(loginTimeout);
   }
 
   @Override
-  public int getLoginTimeout() throws SQLException {
+  public int getLoginTimeout() {
     return DriverManager.getLoginTimeout();
   }
 
   @Override
-  public void setLogWriter(PrintWriter logWriter) throws SQLException {
+  public void setLogWriter(PrintWriter logWriter) {
     DriverManager.setLogWriter(logWriter);
   }
 
   @Override
-  public PrintWriter getLogWriter() throws SQLException {
+  public PrintWriter getLogWriter() {
     return DriverManager.getLogWriter();
   }
 
@@ -151,9 +157,22 @@ public class PooledDataSource implements DataSource {
   }
 
   /**
-   * The maximum number of active connections
+   * Sets the default network timeout value to wait for the database operation to complete. See {@link Connection#setNetworkTimeout(java.util.concurrent.Executor, int)}
    *
-   * @param poolMaximumActiveConnections The maximum number of active connections
+   * @param milliseconds
+   *          The time in milliseconds to wait for the database operation to complete.
+   * @since 3.5.2
+   */
+  public void setDefaultNetworkTimeout(Integer milliseconds) {
+    dataSource.setDefaultNetworkTimeout(milliseconds);
+    forceCloseAll();
+  }
+
+  /**
+   * The maximum number of active connections.
+   *
+   * @param poolMaximumActiveConnections
+   *          The maximum number of active connections
    */
   public void setPoolMaximumActiveConnections(int poolMaximumActiveConnections) {
     this.poolMaximumActiveConnections = poolMaximumActiveConnections;
@@ -161,9 +180,10 @@ public class PooledDataSource implements DataSource {
   }
 
   /**
-   * The maximum number of idle connections
+   * The maximum number of idle connections.
    *
-   * @param poolMaximumIdleConnections The maximum number of idle connections
+   * @param poolMaximumIdleConnections
+   *          The maximum number of idle connections
    */
   public void setPoolMaximumIdleConnections(int poolMaximumIdleConnections) {
     this.poolMaximumIdleConnections = poolMaximumIdleConnections;
@@ -172,10 +192,10 @@ public class PooledDataSource implements DataSource {
 
   /**
    * The maximum number of tolerance for bad connection happens in one thread
-    * which are applying for new {@link PooledConnection}
+   * which are applying for new {@link PooledConnection}.
    *
    * @param poolMaximumLocalBadConnectionTolerance
-   * max tolerance for bad connection happens in one thread
+   *          max tolerance for bad connection happens in one thread
    *
    * @since 3.4.5
    */
@@ -188,7 +208,8 @@ public class PooledDataSource implements DataSource {
    * The maximum time a connection can be used before it *may* be
    * given away again.
    *
-   * @param poolMaximumCheckoutTime The maximum time
+   * @param poolMaximumCheckoutTime
+   *          The maximum time
    */
   public void setPoolMaximumCheckoutTime(int poolMaximumCheckoutTime) {
     this.poolMaximumCheckoutTime = poolMaximumCheckoutTime;
@@ -196,9 +217,10 @@ public class PooledDataSource implements DataSource {
   }
 
   /**
-   * The time to wait before retrying to get a connection
+   * The time to wait before retrying to get a connection.
    *
-   * @param poolTimeToWait The time to wait
+   * @param poolTimeToWait
+   *          The time to wait
    */
   public void setPoolTimeToWait(int poolTimeToWait) {
     this.poolTimeToWait = poolTimeToWait;
@@ -206,9 +228,10 @@ public class PooledDataSource implements DataSource {
   }
 
   /**
-   * The query to be used to check a connection
+   * The query to be used to check a connection.
    *
-   * @param poolPingQuery The query
+   * @param poolPingQuery
+   *          The query
    */
   public void setPoolPingQuery(String poolPingQuery) {
     this.poolPingQuery = poolPingQuery;
@@ -218,7 +241,8 @@ public class PooledDataSource implements DataSource {
   /**
    * Determines if the ping query should be used.
    *
-   * @param poolPingEnabled True if we need to check a connection before using it
+   * @param poolPingEnabled
+   *          True if we need to check a connection before using it
    */
   public void setPoolPingEnabled(boolean poolPingEnabled) {
     this.poolPingEnabled = poolPingEnabled;
@@ -229,7 +253,8 @@ public class PooledDataSource implements DataSource {
    * If a connection has not been used in this many milliseconds, ping the
    * database to make sure the connection is still good.
    *
-   * @param milliseconds the number of milliseconds of inactivity that will trigger a ping
+   * @param milliseconds
+   *          the number of milliseconds of inactivity that will trigger a ping
    */
   public void setPoolPingConnectionsNotUsedFor(int milliseconds) {
     this.poolPingConnectionsNotUsedFor = milliseconds;
@@ -264,6 +289,16 @@ public class PooledDataSource implements DataSource {
     return dataSource.getDriverProperties();
   }
 
+  /**
+   * Gets the default network timeout.
+   *
+   * @return the default network timeout
+   * @since 3.5.2
+   */
+  public Integer getDefaultNetworkTimeout() {
+    return dataSource.getDefaultNetworkTimeout();
+  }
+
   public int getPoolMaximumActiveConnections() {
     return poolMaximumActiveConnections;
   }
@@ -296,11 +331,12 @@ public class PooledDataSource implements DataSource {
     return poolPingConnectionsNotUsedFor;
   }
 
-  /*
-   * Closes all active and idle connections in the pool
+  /**
+   * Closes all active and idle connections in the pool.
    */
   public void forceCloseAll() {
-    synchronized (state) {
+    lock.lock();
+    try {
       expectedConnectionTypeCode = assembleConnectionTypeCode(dataSource.getUrl(), dataSource.getUsername(), dataSource.getPassword());
       for (int i = state.activeConnections.size(); i > 0; i--) {
         try {
@@ -330,6 +366,8 @@ public class PooledDataSource implements DataSource {
           // ignore
         }
       }
+    } finally {
+      lock.unlock();
     }
     if (log.isDebugEnabled()) {
       log.debug("PooledDataSource forcefully closed/removed all connections.");
@@ -346,7 +384,8 @@ public class PooledDataSource implements DataSource {
 
   protected void pushConnection(PooledConnection conn) throws SQLException {
 
-    synchronized (state) {
+    lock.lock();
+    try {
       state.activeConnections.remove(conn);
       if (conn.isValid()) {
         if (state.idleConnections.size() < poolMaximumIdleConnections && conn.getConnectionTypeCode() == expectedConnectionTypeCode) {
@@ -362,7 +401,7 @@ public class PooledDataSource implements DataSource {
           if (log.isDebugEnabled()) {
             log.debug("Returned connection " + newConn.getRealHashCode() + " to pool.");
           }
-          state.notifyAll();
+          condition.signal();
         } else {
           state.accumulatedCheckoutTime += conn.getCheckoutTime();
           if (!conn.getRealConnection().getAutoCommit()) {
@@ -380,6 +419,8 @@ public class PooledDataSource implements DataSource {
         }
         state.badConnectionCount++;
       }
+    } finally {
+      lock.unlock();
     }
   }
 
@@ -390,7 +431,8 @@ public class PooledDataSource implements DataSource {
     int localBadConnectionCount = 0;
 
     while (conn == null) {
-      synchronized (state) {
+      lock.lock();
+      try {
         if (!state.idleConnections.isEmpty()) {
           // Pool has available connection
           conn = state.idleConnections.remove(0);
@@ -428,7 +470,7 @@ public class PooledDataSource implements DataSource {
                      connection. At the end of this loop, bad {@link @conn} will be set as null.
                    */
                   log.debug("Bad connection. Could not roll back");
-                }  
+                }
               }
               conn = new PooledConnection(oldestActiveConnection.getRealConnection(), this);
               conn.setCreatedTimestamp(oldestActiveConnection.getCreatedTimestamp());
@@ -448,9 +490,11 @@ public class PooledDataSource implements DataSource {
                   log.debug("Waiting as long as " + poolTimeToWait + " milliseconds for connection.");
                 }
                 long wt = System.currentTimeMillis();
-                state.wait(poolTimeToWait);
+                condition.await(poolTimeToWait, TimeUnit.MILLISECONDS);
                 state.accumulatedWaitTime += System.currentTimeMillis() - wt;
               } catch (InterruptedException e) {
+                // set interrupt flag
+                Thread.currentThread().interrupt();
                 break;
               }
             }
@@ -483,6 +527,8 @@ public class PooledDataSource implements DataSource {
             }
           }
         }
+      } finally {
+        lock.unlock();
       }
 
     }
@@ -500,7 +546,8 @@ public class PooledDataSource implements DataSource {
   /**
    * Method to check to see if a connection is still usable
    *
-   * @param conn - the connection to check
+   * @param conn
+   *          - the connection to check
    * @return True if the connection is still usable
    */
   protected boolean pingConnection(PooledConnection conn) {
@@ -515,36 +562,33 @@ public class PooledDataSource implements DataSource {
       result = false;
     }
 
-    if (result) {
-      if (poolPingEnabled) {
-        if (poolPingConnectionsNotUsedFor >= 0 && conn.getTimeElapsedSinceLastUse() > poolPingConnectionsNotUsedFor) {
-          try {
-            if (log.isDebugEnabled()) {
-              log.debug("Testing connection " + conn.getRealHashCode() + " ...");
-            }
-            Connection realConn = conn.getRealConnection();
-            try (Statement statement = realConn.createStatement()) {
-              statement.executeQuery(poolPingQuery).close();
-            }
-            if (!realConn.getAutoCommit()) {
-              realConn.rollback();
-            }
-            result = true;
-            if (log.isDebugEnabled()) {
-              log.debug("Connection " + conn.getRealHashCode() + " is GOOD!");
-            }
-          } catch (Exception e) {
-            log.warn("Execution of ping query '" + poolPingQuery + "' failed: " + e.getMessage());
-            try {
-              conn.getRealConnection().close();
-            } catch (Exception e2) {
-              //ignore
-            }
-            result = false;
-            if (log.isDebugEnabled()) {
-              log.debug("Connection " + conn.getRealHashCode() + " is BAD: " + e.getMessage());
-            }
-          }
+    if (result && poolPingEnabled && poolPingConnectionsNotUsedFor >= 0
+        && conn.getTimeElapsedSinceLastUse() > poolPingConnectionsNotUsedFor) {
+      try {
+        if (log.isDebugEnabled()) {
+          log.debug("Testing connection " + conn.getRealHashCode() + " ...");
+        }
+        Connection realConn = conn.getRealConnection();
+        try (Statement statement = realConn.createStatement()) {
+          statement.executeQuery(poolPingQuery).close();
+        }
+        if (!realConn.getAutoCommit()) {
+          realConn.rollback();
+        }
+        result = true;
+        if (log.isDebugEnabled()) {
+          log.debug("Connection " + conn.getRealHashCode() + " is GOOD!");
+        }
+      } catch (Exception e) {
+        log.warn("Execution of ping query '" + poolPingQuery + "' failed: " + e.getMessage());
+        try {
+          conn.getRealConnection().close();
+        } catch (Exception e2) {
+          // ignore
+        }
+        result = false;
+        if (log.isDebugEnabled()) {
+          log.debug("Connection " + conn.getRealHashCode() + " is BAD: " + e.getMessage());
         }
       }
     }
@@ -554,7 +598,8 @@ public class PooledDataSource implements DataSource {
   /**
    * Unwraps a pooled connection to get to the 'real' connection
    *
-   * @param conn - the pooled connection to unwrap
+   * @param conn
+   *          - the pooled connection to unwrap
    * @return The 'real' connection
    */
   public static Connection unwrapConnection(Connection conn) {
@@ -567,21 +612,25 @@ public class PooledDataSource implements DataSource {
     return conn;
   }
 
+  @Override
   protected void finalize() throws Throwable {
     forceCloseAll();
     super.finalize();
   }
 
+  @Override
   public <T> T unwrap(Class<T> iface) throws SQLException {
     throw new SQLException(getClass().getName() + " is not a wrapper.");
   }
 
-  public boolean isWrapperFor(Class<?> iface) throws SQLException {
+  @Override
+  public boolean isWrapperFor(Class<?> iface) {
     return false;
   }
 
+  @Override
   public Logger getParentLogger() {
-    return Logger.getLogger(Logger.GLOBAL_LOGGER_NAME); // requires JDK version 1.6
+    return Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
   }
 
 }

@@ -1,11 +1,11 @@
-/**
- *    Copyright 2009-2018 the original author or authors.
+/*
+ *    Copyright 2009-2022 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *       https://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -174,13 +174,20 @@ public final class MappedStatement {
       return this;
     }
 
-    /** @deprecated Use {@link #resultSets} */
+    /**
+     * Resul sets.
+     *
+     * @param resultSet
+     *          the result set
+     * @return the builder
+     * @deprecated Use {@link #resultSets}
+     */
     @Deprecated
     public Builder resulSets(String resultSet) {
       mappedStatement.resultSets = delimitedStringToArray(resultSet);
       return this;
     }
-    
+
     public MappedStatement build() {
       assert mappedStatement.configuration != null;
       assert mappedStatement.id != null;
@@ -283,12 +290,17 @@ public final class MappedStatement {
     return resultSets;
   }
 
-  /** @deprecated Use {@link #getResultSets()} */
+  /**
+   * Gets the resul sets.
+   *
+   * @return the resul sets
+   * @deprecated Use {@link #getResultSets()}
+   */
   @Deprecated
   public String[] getResulSets() {
     return resultSets;
   }
-  
+
   public BoundSql getBoundSql(Object parameterObject) {
     BoundSql boundSql = sqlSource.getBoundSql(parameterObject);
     List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();

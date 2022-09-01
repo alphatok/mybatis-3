@@ -1,11 +1,11 @@
-/**
- *    Copyright 2009-2018 the original author or authors.
+/*
+ *    Copyright 2009-2022 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *       https://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,7 +15,7 @@
  */
 package org.apache.ibatis.submitted.use_actual_param_name;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.Reader;
 import java.util.Arrays;
@@ -26,18 +26,18 @@ import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
-public class UseActualParamNameTest {
+class UseActualParamNameTest {
 
   private static SqlSessionFactory sqlSessionFactory;
 
-  @BeforeClass
-  public static void setUp() throws Exception {
+  @BeforeAll
+  static void setUp() throws Exception {
     // create an SqlSessionFactory
-    try (Reader reader = Resources.getResourceAsReader(
-        "org/apache/ibatis/submitted/use_actual_param_name/mybatis-config.xml")) {
+    try (Reader reader = Resources
+        .getResourceAsReader("org/apache/ibatis/submitted/use_actual_param_name/mybatis-config.xml")) {
       sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
     }
 
@@ -47,7 +47,7 @@ public class UseActualParamNameTest {
   }
 
   @Test
-  public void shouldSingleParamBeReferencedByAnyName() {
+  void shouldSingleParamBeReferencedByAnyName() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
       User user = mapper.getUserById(1);
@@ -56,7 +56,8 @@ public class UseActualParamNameTest {
   }
 
   @Test
-  public void shouldMultipleParamsBeReferencedByActualNames() {
+  void shouldMultipleParamsBeReferencedByActualNames() {
+    // This test requires -parameters compiler option
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
       User user = mapper.getUserByIdAndName(1, "User1");
@@ -65,7 +66,7 @@ public class UseActualParamNameTest {
   }
 
   @Test
-  public void shouldSoleListParamBeReferencedByImplicitName() {
+  void shouldSoleListParamBeReferencedByImplicitName() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
       List<User> users = mapper.getUsersByIdList(Arrays.asList(1, 2));
@@ -74,7 +75,7 @@ public class UseActualParamNameTest {
   }
 
   @Test
-  public void shouldListParamBeReferencedByActualNameIfAnotherParamExists() {
+  void shouldListParamBeReferencedByActualNameIfAnotherParamExists() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
       List<User> users = mapper.getUsersByIdListAndName(Arrays.asList(1, 2), null);

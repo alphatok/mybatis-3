@@ -1,11 +1,11 @@
-/**
- *    Copyright 2009-2015 the original author or authors.
+/*
+ *    Copyright 2009-2022 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *       https://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,6 +14,8 @@
  *    limitations under the License.
  */
 package org.apache.ibatis.submitted.foreach_map;
+
+import java.util.Objects;
 
 public class NestedBeanMapEntry {
   public NestedBeanMapEntry() {
@@ -67,13 +69,13 @@ public class NestedBeanMapEntry {
 
     NestedBeanMapEntry map3Entry = (NestedBeanMapEntry) o;
 
-    if (keya != null ? !keya.equals(map3Entry.keya) : map3Entry.keya != null)
+    if (! Objects.equals(keya, map3Entry.keya))
       return false;
-    if (keyb != null ? !keyb.equals(map3Entry.keyb) : map3Entry.keyb != null)
+    if (! Objects.equals(keyb, map3Entry.keyb))
       return false;
-    if (valuea != null ? !valuea.equals(map3Entry.valuea) : map3Entry.valuea != null)
+    if (! Objects.equals(valuea, map3Entry.valuea))
       return false;
-    if (valueb != null ? !valueb.equals(map3Entry.valueb) : map3Entry.valueb != null)
+    if (! Objects.equals(valueb, map3Entry.valueb))
       return false;
 
     return true;

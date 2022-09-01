@@ -1,11 +1,11 @@
-/**
- *    Copyright 2009-2018 the original author or authors.
+/*
+ *    Copyright 2009-2022 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *       https://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,6 +15,10 @@
  */
 package org.apache.ibatis.submitted.global_variables_defaults;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.util.Properties;
+
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.parsing.PropertyParser;
 import org.apache.ibatis.session.Configuration;
@@ -22,16 +26,12 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.util.Properties;
-
-public class XmlMapperTest {
+class XmlMapperTest {
 
   @Test
-  public void applyDefaultValueOnXmlMapper() throws IOException {
+  void applyDefaultValueOnXmlMapper() throws IOException {
 
     Properties props = new Properties();
     props.setProperty(PropertyParser.KEY_ENABLE_DEFAULT_VALUE, "true");
@@ -55,7 +55,7 @@ public class XmlMapperTest {
   }
 
   @Test
-  public void applyPropertyValueOnXmlMapper() throws IOException {
+  void applyPropertyValueOnXmlMapper() throws IOException {
 
     Properties props = new Properties();
     props.setProperty(PropertyParser.KEY_ENABLE_DEFAULT_VALUE, "true");

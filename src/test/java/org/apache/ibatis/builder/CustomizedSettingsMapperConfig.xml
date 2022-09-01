@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!--
 
-       Copyright 2009-2017 the original author or authors.
+       Copyright 2009-2022 the original author or authors.
 
        Licensed under the Apache License, Version 2.0 (the "License");
        you may not use this file except in compliance with the License.
        You may obtain a copy of the License at
 
-          http://www.apache.org/licenses/LICENSE-2.0
+          https://www.apache.org/licenses/LICENSE-2.0
 
        Unless required by applicable law or agreed to in writing, software
        distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,6 +40,7 @@
     <setting name="defaultExecutorType" value="BATCH"/>
     <setting name="defaultStatementTimeout" value="10"/>
     <setting name="defaultFetchSize" value="100"/>
+    <setting name="defaultResultSetType" value="SCROLL_INSENSITIVE"/>
     <setting name="mapUnderscoreToCamelCase" value="true"/>
     <setting name="safeRowBoundsEnabled" value="true"/>
     <setting name="localCacheScope" value="STATEMENT"/>
@@ -53,6 +54,10 @@
     <setting name="vfsImpl" value="org.apache.ibatis.io.JBoss6VFS"/>
     <setting name="configurationFactory" value="java.lang.String"/>
     <setting name="defaultEnumTypeHandler" value="org.apache.ibatis.type.EnumOrdinalTypeHandler"/>
+    <setting name="shrinkWhitespacesInSql" value="true"/>
+    <setting name="argNameBasedConstructorAutoMapping" value="true"/>
+    <setting name="defaultSqlProviderType" value="org.apache.ibatis.builder.XmlConfigBuilderTest$MySqlProvider"/>
+    <setting name="nullableOnForEach" value="true"/>
   </settings>
 
   <typeAliases>
@@ -74,7 +79,7 @@
   </objectFactory>
 
   <objectWrapperFactory type="org.apache.ibatis.builder.CustomObjectWrapperFactory" />
-  
+
   <reflectorFactory type="org.apache.ibatis.builder.CustomReflectorFactory"/>
 
   <plugins>
@@ -96,7 +101,7 @@
       </dataSource>
     </environment>
   </environments>
-  
+
   <databaseIdProvider type="DB_VENDOR">
     <property name="Apache Derby" value="derby"/>
   </databaseIdProvider>

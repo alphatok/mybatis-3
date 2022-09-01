@@ -1,11 +1,11 @@
-/**
- *    Copyright 2009-2017 the original author or authors.
+/*
+ *    Copyright 2009-2022 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *       https://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,6 +14,12 @@
  *    limitations under the License.
  */
 package org.apache.ibatis.scripting.defaults;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -29,24 +35,18 @@ import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeException;
 import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.TypeHandlerRegistry;
-import org.junit.Assert;
-import org.junit.Test;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * DefaultParameterHandlerTest
  *
  * @author Ryan Lamore
  */
-public class DefaultParameterHandlerTest {
+class DefaultParameterHandlerTest {
 
   @Test
-  public void setParametersThrowsProperException() throws SQLException {
+  void setParametersThrowsProperException() throws SQLException {
     final MappedStatement mappedStatement = getMappedStatement();
     final Object parameterObject = null;
     final BoundSql boundSql = mock(BoundSql.class);
@@ -62,10 +62,10 @@ public class DefaultParameterHandlerTest {
     PreparedStatement ps = mock(PreparedStatement.class);
     try {
       defaultParameterHandler.setParameters(ps);
-      Assert.fail("Should have thrown TypeException");
+      Assertions.fail("Should have thrown TypeException");
     } catch (Exception e) {
-      Assert.assertTrue("expected TypeException", e instanceof TypeException);
-      Assert.assertTrue("", e.getMessage().contains("mapping: ParameterMapping"));
+      Assertions.assertTrue(e instanceof TypeException, "expected TypeException");
+      Assertions.assertTrue(e.getMessage().contains("mapping: ParameterMapping"));
     }
 
   }

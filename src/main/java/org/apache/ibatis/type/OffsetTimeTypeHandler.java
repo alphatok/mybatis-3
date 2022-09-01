@@ -1,11 +1,11 @@
-/**
- *    Copyright 2009-2018 the original author or authors.
+/*
+ *    Copyright 2009-2022 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *       https://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@ import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Time;
 import java.time.OffsetTime;
 
 /**
@@ -31,31 +30,22 @@ public class OffsetTimeTypeHandler extends BaseTypeHandler<OffsetTime> {
   @Override
   public void setNonNullParameter(PreparedStatement ps, int i, OffsetTime parameter, JdbcType jdbcType)
           throws SQLException {
-    ps.setTime(i, Time.valueOf(parameter.toLocalTime()));
+    ps.setObject(i, parameter);
   }
 
   @Override
   public OffsetTime getNullableResult(ResultSet rs, String columnName) throws SQLException {
-    Time time = rs.getTime(columnName);
-    return getOffsetTime(time);
+    return rs.getObject(columnName, OffsetTime.class);
   }
 
   @Override
   public OffsetTime getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
-    Time time = rs.getTime(columnIndex);
-    return getOffsetTime(time);
+    return rs.getObject(columnIndex, OffsetTime.class);
   }
 
   @Override
   public OffsetTime getNullableResult(CallableStatement cs, int columnIndex) throws SQLException {
-    Time time = cs.getTime(columnIndex);
-    return getOffsetTime(time);
+    return cs.getObject(columnIndex, OffsetTime.class);
   }
 
-  private static OffsetTime getOffsetTime(Time time) {
-    if (time != null) {
-      return time.toLocalTime().atOffset(OffsetTime.now().getOffset());
-    }
-    return null;
-  }
 }

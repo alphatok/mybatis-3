@@ -1,11 +1,11 @@
-/**
- *    Copyright 2009-2018 the original author or authors.
+/*
+ *    Copyright 2009-2022 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *       https://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,15 +24,15 @@ import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
-public class ComplexTypeTest {
+class ComplexTypeTest {
 
   private static SqlSessionFactory sqlSessionFactory;
 
-  @BeforeClass
-  public static void setUp() throws Exception {
+  @BeforeAll
+  static void setUp() throws Exception {
     // create a SqlSessionFactory
     try (Reader reader = Resources.getResourceAsReader("org/apache/ibatis/submitted/complex_type/mybatis-config.xml")) {
       sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
@@ -45,7 +45,7 @@ public class ComplexTypeTest {
 
   // see https://issues.apache.org/jira/browse/IBATIS-653
   @Test
-  public void shouldUpdateProps() {
+  void shouldUpdateProps() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Item item = new Item();
       item.id = 10;
@@ -55,7 +55,7 @@ public class ComplexTypeTest {
       Property p2 = new Property();
       p2.id = 12;
       p2.value = "value12";
-      List<Property> list = new ArrayList<Property>();
+      List<Property> list = new ArrayList<>();
       list.add(p1);
       list.add(p2);
       item.properties = list;

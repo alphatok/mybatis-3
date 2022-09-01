@@ -1,11 +1,11 @@
-/**
- *    Copyright 2009-2018 the original author or authors.
+/*
+ *    Copyright 2009-2022 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *       https://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,7 +15,7 @@
  */
 package org.apache.ibatis.submitted.custom_collection_handling;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -27,17 +27,15 @@ import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class CustomCollectionHandlingTest {
+class CustomCollectionHandlingTest {
 
     /**
      * Custom collections with nested resultMap.
-     *
-     * @throws Exception
      */
     @Test
-    public void testSelectListWithNestedResultMap() throws Exception {
+    void testSelectListWithNestedResultMap() throws Exception {
         String xmlConfig = "org/apache/ibatis/submitted/custom_collection_handling/MapperConfig.xml";
         SqlSessionFactory sqlSessionFactory = getSqlSessionFactoryXmlConfig(xmlConfig);
         try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
@@ -51,11 +49,9 @@ public class CustomCollectionHandlingTest {
 
     /**
      * Custom collections with nested select.
-     *
-     * @throws Exception
      */
     @Test
-    public void testSelectListWithNestedSelect() throws Exception {
+    void testSelectListWithNestedSelect() throws Exception {
         String xmlConfig = "org/apache/ibatis/submitted/custom_collection_handling/MapperConfig.xml";
         SqlSessionFactory sqlSessionFactory = getSqlSessionFactoryXmlConfig(xmlConfig);
         try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
